@@ -130,16 +130,52 @@ public class GraphProcessor {
     public String generateNewText(String inputText) {
         String[] words = inputText.toLowerCase().replaceAll("[^a-z\\s]", " ").split("\\s+");
         StringBuilder newText = new StringBuilder();
+        GraphViz gv = new GraphViz();
+        gv.addln(gv.start_graph());
 
         for (int i = 0; i < words.length - 1; i++) {
             newText.append(words[i]).append(" ");
             String bridgeWord = getBridgeWord(words[i], words[i+1]);
             if (bridgeWord != null) {
                 newText.append(bridgeWord).append(" ");
+                int weight = calculateWeight(words[i], words[i+1], inputText);
+                gv.addln(words[i] + " [style=filled, fillcolor=yellow];");
+                gv.addln(words[i+1] + " [style=filled, fillcolor=yellow];");
+                gv.addln(bridgeWord + " [style=filled, fillcolor=blue];");
+
+                gv.addln(words[i] + " -> " + bridgeWord + " [color=blue, label=\"" + weight + "\"];");
+                gv.addln(bridgeWord + " -> " + words[i+1] + " [color=blue, label=\"" + weight + "\"];");
+            }else{
+                int weight = calculateWeight(words[i], words[i+1], inputText);
+                gv.addln(words[i]);
+                gv.addln(words[i] + " -> " + words[i+1] + " [label=\"" + weight + "\"];");
             }
+        }
+        gv.addln(gv.end_graph());
+        //绘图
+        String type = "png";
+        File out = new File("graph." + type);
+        byte[] img = gv.getGraph(gv.getDotSource(), type);
+        if (img != null) {
+            gv.writeGraphToFile(img, out);
+            System.out.println("Graph generated successfully: " + out.getAbsolutePath());
+        } else {
+            System.err.println("Error generating graph!");
         }
         newText.append(words[words.length - 1]);
         return newText.toString();
+    }
+
+    private int calculateWeight(String word1, String word2, String inputText) {
+        // 计算边的权重：word1和word2在inputText中相邻出现的次数
+        String[] words = inputText.split("\\s+");
+        int count = 0;
+        for (int i = 0; i < words.length - 1; i++) {
+            if (words[i].equals(word1) && words[i + 1].equals(word2)) {
+                count++;
+            }
+        }
+        return count;
     }
 
     //获取桥接词
@@ -161,12 +197,13 @@ public class GraphProcessor {
     //使用Dijkstra算法计算单源最短路径
     public String calcShortestPath(String word1, String word2) {
         if (!graph.containsKey(word1) || !graph.containsKey(word2)) {
-            return "No " + word1 + " or " + word2 + "in the graph!";
+            return "No " + word1 + " or " + word2 + " in the graph!";
         }
-
         Map<String, Integer> distances = new HashMap<>();
         Map<String, String> path = new HashMap<>();
         PriorityQueue<String> queue = new PriorityQueue<>(Comparator.comparingInt(distances::get));
+        GraphViz gv = new GraphViz();
+        gv.addln(gv.start_graph());
 
         //开始时，将所有节点的距离设为最大
         for (String node : graph.keySet()) {
@@ -202,8 +239,50 @@ public class GraphProcessor {
         }
         //反转shortestpath，得到最短路径
         Collections.reverse(shortestpath);
+
+        gv.addln(word1 + " [style=filled, fillcolor=yellow];");
+        gv.addln(word2 + " [style=filled, fillcolor=yellow];");
+        String preWord = word1;
+        for (String node : shortestpath){
+            if (node.equals(word1)) continue;
+            if (!node.equals(word2)) {
+                gv.addln(node + " [style=filled, fillcolor=blue];");
+            }
+            int weight = graph.get(preWord).get(node);
+            gv.addln(preWord + " -> " + node + " [color=blue, label=\"" + weight + "\"];");
+            preWord = node;
+        }
+
+        for (String from : graph.keySet()){
+            for (String to : graph.get(from).keySet()){
+                if (shortestpath.contains(from) && shortestpath.contains(to) && shortestNextNode(shortestpath, from, to)) continue;
+                int weight = graph.get(from).get(to);
+                if (!shortestpath.contains(from)) gv.addln(from);
+                gv.addln(from + " -> " + to + " [label=\"" + weight + "\"];");
+                if (!shortestpath.contains(to)) gv.addln(to);
+            }
+        }
+        gv.addln(gv.end_graph());
+        //绘图
+        String type = "png";
+        File out = new File("graph." + type);
+        byte[] img = gv.getGraph(gv.getDotSource(), type);
+        if (img != null) {
+            gv.writeGraphToFile(img, out);
+            System.out.println("Graph generated successfully: " + out.getAbsolutePath());
+        } else {
+            System.err.println("Error generating graph!");
+        }
+
         //String.join方法将节点使用"->"连接
         return "Shortest path: " + String.join(" -> ", shortestpath) + " (Length: " + distances.get(word2) + ")";
+    }
+
+    public boolean shortestNextNode(List<String> shortestpath, String word1, String word2) {
+        for (int i = 0; i < shortestpath.size()-1; i++) {
+            if (word1.equals(shortestpath.get(i)) && word2.equals(shortestpath.get(i+1))) return true;
+        }
+        return false;
     }
 
     //5.随机游走
@@ -212,11 +291,17 @@ public class GraphProcessor {
         if (nodes.isEmpty()) return "";
         //随机选择起始节点
         String current = nodes.get(new Random().nextInt(nodes.size()));
+        System.out.print(current + " ");
         //记录访问过的边
         Set<String> visitedEdges = new HashSet<>();
         StringBuilder walk = new StringBuilder(current);
+        Scanner scanner = new Scanner(System.in);
+        boolean isloop = true;
+        // 等待用户输入
+        String input = scanner.nextLine();
+        if (!input.isEmpty()) isloop = false;
 
-        while (true) {
+        while (isloop) {
             //将当前节点的另据节点哈希表提取出来
             Map<String, Integer> neighbors = graph.get(current);
             if (neighbors == null || neighbors.isEmpty()) break;
@@ -225,12 +310,23 @@ public class GraphProcessor {
             String next = edges.get(new Random().nextInt(edges.size()));
             //构建边，若已访问
             String edge = current + " -> " + next;
+            System.out.print(next + " ");
             walk.append(" ").append(next);
             current = next;
-
             //出现重复的边，停止随机游走
             if (visitedEdges.contains(edge)) break;
             visitedEdges.add(edge);
+            // 等待用户输入
+            String inPut = scanner.nextLine();
+            if (!inPut.isEmpty()) break;
+        }
+        System.out.println();
+
+        // 将结果写入文件
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("random_walk.txt"))) {
+            writer.write(walk.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return walk.toString();
