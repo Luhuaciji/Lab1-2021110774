@@ -331,4 +331,8 @@ public class GraphProcessor {
 
         return walk.toString();
     }
+
+    public void gitLabedit() {
+        System.out.println("对Lab1进行若干修改，对其进行本地仓库提交操作");
+    }
 }
