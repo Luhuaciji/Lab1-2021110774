@@ -390,14 +390,16 @@ public class GraphProcessor {
     Set<String> visitedEdges = new HashSet<>();
     StringBuilder walk = new StringBuilder(current);
     Scanner scanner = new Scanner(System.in, StandardCharsets.UTF_8);
-    boolean isloop = true;
-    // 等待用户输入
-    String input = scanner.nextLine();
-    if (!input.isEmpty()) {
-      isloop = false;
-    }
 
-    while (isloop) {
+    while (true) {
+      /*
+      // 等待用户输入
+      String inPut = scanner.nextLine();
+      if (!inPut.isEmpty()) {
+        break;
+      }
+       */
+
       //将当前节点的另据节点哈希表提取出来
       Map<String, Integer> neighbors = graph.get(current);
       if (neighbors == null || neighbors.isEmpty()) {
@@ -416,11 +418,6 @@ public class GraphProcessor {
         break;
       }
       visitedEdges.add(edge);
-      // 等待用户输入
-      String inPut = scanner.nextLine();
-      if (!inPut.isEmpty()) {
-        break;
-      }
     }
     System.out.println();
 
