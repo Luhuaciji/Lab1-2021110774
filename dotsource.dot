@@ -1,57 +1,160 @@
 digraph G {
+i [style=filled, fillcolor=yellow];
+saying [style=filled, fillcolor=yellow];
+am [style=filled, fillcolor=blue];
+i -> am [color=blue, label="1"];
+am -> saying [color=blue, label="1"];
+worlds
 worlds -> to [label="1"];
+to
+reach
 reach -> the [label="1"];
+the
+enjoy
 enjoy -> our [label="1"];
+our
+do
 do -> not [label="1"];
+not
+do
 do -> you [label="1"];
+you
+seek
 seek -> out [label="2"];
+out
+our
 our -> nice [label="1"];
+nice
+life
 life -> and [label="1"];
+and
+out
 out -> new [label="1"];
+new
+out
 out -> and [label="1"];
+and
+out
 out -> i [label="1"];
+out
 out -> do [label="1"];
+do
+east
 east -> coast [label="1"];
+coast
+not
 not -> know [label="1"];
+know
+and
 and -> new [label="1"];
+new
+and
 and -> enjoy [label="1"];
+enjoy
+and
 and -> out [label="1"];
+out
+of
 of -> fifty [label="1"];
+fifty
+have
 have -> dinner [label="1"];
+dinner
+me
 me -> to [label="1"];
+to
 saying -> i [label="1"];
+civilizations
 civilizations -> to [label="1"];
+to
+just
 just -> need [label="1"];
+need
+you
 you -> want [label="1"];
+want
+park
 park -> center [label="1"];
+center
+new
 new -> worlds [label="1"];
+worlds
+new
 new -> civilizations [label="1"];
+civilizations
+new
 new -> life [label="1"];
+life
+amount
 amount -> of [label="1"];
+of
+explore
 explore -> strange [label="1"];
+strange
+in
 in -> the [label="1"];
+the
+need
 need -> to [label="1"];
+to
+want
 want -> to [label="1"];
+to
+center
 center -> to [label="1"];
+to
+go
 go -> out [label="1"];
+out
 i -> do [label="1"];
-i -> am [label="1"];
+do
 i -> just [label="1"];
-am -> saying [label="1"];
+just
+dinner
 dinner -> with [label="1"];
+with
+strange
 strange -> new [label="1"];
+new
+nice
 nice -> party [label="1"];
+party
+the
 the -> east [label="1"];
+east
+the
 the -> amount [label="1"];
+amount
+with
 with -> me [label="1"];
+me
+coast
 coast -> park [label="1"];
+park
+what
 what -> i [label="1"];
+know
 know -> what [label="1"];
+what
+to
 to -> explore [label="1"];
+explore
+to
 to -> and [label="1"];
+and
+to
 to -> reach [label="1"];
+reach
+to
 to -> have [label="1"];
+have
+to
 to -> go [label="1"];
+go
+to
 to -> seek [label="2"];
+seek
+party
 party -> in [label="1"];
+in
 }
